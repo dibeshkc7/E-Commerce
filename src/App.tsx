@@ -1,39 +1,22 @@
-import Header from './layout/Header';
-import Footer from './layout/Footer';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Header from "./layout/Header";
+import Home from "./pages/Home/Home";
+import Products from "./pages/Products/Products";
+import Pricing from "./pages/Pricing/Pricing";
+import Contact from "./pages/Contact/Contact";
 
-import Display from './component/Display';
-
-
-
-function App() {
-
-  const handleClick = () => {
-    console.log("Clicked")
-  }
-  const handleClick2 = () => {
-    console.log("I am clicked")
-  }
+const App = () => {
   return (
-    <div>
+    <Router>
       <Header />
-      <Display
-        FirstName={"Alesh"}
-        LastName={"Maharjan"}
-        address={"aaa"}
-        age={50}
-        onClick={handleClick}
-      />
-      <Display
-        FirstName={"aaaa"}
-        LastName={"Maharjan"}
-        address={"aaa"}
-        age={50}
-        onClick={handleClick2}
-      />
-      <Footer />
-    </div>
-
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
