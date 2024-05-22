@@ -47,7 +47,7 @@ const Products = () => {
               <p className="font-bold capitalize">{product.category}</p>
               <p className="line-clamp-1">{product.title}</p>
               <div><span className="font-bold">Rating:</span> {product.rating.rate}, {product.rating.count}</div>
-              <p><span className="font-bold">Price:</span> {product.price}</p>
+              <p><span className="font-bold">Price:</span> $ {product.price}</p>
               <p className="line-clamp-2">{product.description}</p>
             </div>
             <div>
