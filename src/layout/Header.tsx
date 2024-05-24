@@ -17,6 +17,10 @@ const NavItems = [
     title: "Contact",
     path: "/contact",
   },
+  {
+    title: "Post",
+    path: "/post"
+  }
 ];
 
 const Header = () => {
