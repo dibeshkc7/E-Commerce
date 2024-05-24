@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { IProduct } from "../../interface/product"
 
-interface IProduct {
-  category: string,
-  description: string,
-  id: number,
-  image: string,
-  rating: {
-    rate: number,
-    count: number
-  }
-  title: string,
-  price: number
-}
+// interface IProduct {
+//   category: string,
+//   description: string,
+//   id: number,
+//   image: string,
+//   rating: {
+//     rate: number,
+//     count: number
+//   }
+//   title: string,
+//   price: number
+// }
 
 const Products = () => {
   const [products, setProducts] = useState<IProduct[]>([])
