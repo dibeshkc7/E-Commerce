@@ -26,7 +26,7 @@ const Products = () => {
         const products = await res.json();
         setProducts(products)
       } catch (error: any) {
-        console.log(error)
+        console.log(error)    
       }
     }
 

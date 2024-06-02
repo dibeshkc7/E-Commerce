@@ -35,8 +35,7 @@ interface Props {
           <div className="border-t mt-2">
             
             <p className="line-clamp-1">{post?.title}</p>
-            
-           
+            <p className="line-clamp-1">{post?.body}</p>
             
           </div>
           <div></div>
