@@ -7,7 +7,7 @@ interface Props {
   }
   
   const PostDetail = ({ id }: Props) => {
-    const [post, setPost] = useState<IPost>();
+    const [post, setPost] = useState<IPost>(); 
   
     useEffect(() => {
       const postDetail = async () => {
