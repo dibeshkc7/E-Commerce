@@ -11,28 +11,37 @@ import RegisterPage from "./pages/register/register-page";
 import SigninPage from "./pages/sign-in/sign-in";
 import NotFound from "./pages/not-found/not-found";
 import ContactPage from "./pages/Contact/contact-page";
+import Dashboard from "./pages/Dashboard/dashboard";
+import AuthLayout from "./layout/Auth-layout/auth";
+import DefaultLayout from "./layout/Default/default";
 
 const App = () => {
   return (
     <Router>
-      <Header />
       <Routes>
-        
-        <Route path="/" element={<Home />} />
         <Route path="*" element={<NotFound />} />
 
-        <Route path="/products" element={<Product />} />
-        <Route path="/products/:id" element={<SingleProduct />} />
+        {/* default layout */}
+        <Route element={<DefaultLayout />}>
+          <Route path="/" element={<Home />} />
 
-        <Route path="/pricing" element={<Pricing />} />
-        <Route path="/contact" element={<Contact />} />
+          <Route path="/products" element={<Product />} />
+          <Route path="/products/:id" element={<SingleProduct />} />
 
-        <Route path="/Post" element={<Post />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/contact" element={<Contact />} />
 
-        <Route path="/Post/:id" element={<SinglePost />} />
-        <Route path="/Register" element={<RegisterPage />} />
-        <Route path="/Login" element={<SigninPage />} />
-        <Route path="/Contact" element={<ContactPage />} />
+          <Route path="/Post" element={<Post />} />
+
+          <Route path="/Post/:id" element={<SinglePost />} />
+          <Route path="/Register" element={<RegisterPage />} />
+          <Route path="/Login" element={<SigninPage />} />
+          <Route path="/Contact" element={<ContactPage />} />
+        </Route>
+
+        <Route element={<AuthLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
       </Routes>
     </Router>
   );

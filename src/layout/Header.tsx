@@ -119,6 +119,15 @@ const Header = () => {
                 Register
               </Button>
             </Link>
+            <Link to="/Dashboard">
+              <Button
+                buttonType={"button"}
+                buttonColor={isLogin ? { primary: true } : { outline: true }}
+                rounded
+              >
+                Dashboard
+              </Button>
+            </Link>
           </div>
         </div>
       </nav>
