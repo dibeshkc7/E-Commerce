@@ -1,6 +1,11 @@
 const { default: userModel } = require("../Model/userModel");
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
 const UserModel = require("../Model/userModel");
+const jwt = require("jsonwebtoken")
+const { expressjwt: ExpressJWT} = require("express-jwt")
+const SECRETKEY = process.env.SECRET_KEY
+
+// controller
 
 exports.CreateUser = async (req, res) => {
   const checkEmail = await UserModel.findOne({ email: req.body.email });
@@ -35,27 +40,31 @@ exports.CreateUser = async (req, res) => {
 };
 
 exports.getAllUser = async (req, res) => {
-    const users = await UserModel.find();
-    if (!users) {
-        return res.status(400).json({ message: "Users not found" })
-    }
-    return res.send(users)
-}
+  const users = await UserModel.find();
+  if (!users) {
+    return res.status(400).json({ message: "Users not found" });
+  }
+  return res.send(users);
+};
 
-exports.updateUser = async (req,res)=>{
-    const update = await UserModel.findByIdAndUpdate(req.params.id, {
+exports.updateUser = async (req, res) => {
+  const update = await UserModel.findByIdAndUpdate(
+    req.params.id,
+    {
       "userDetail.firstName": req.body.firstName,
       "userDetail.middleName": req.body.middleName,
       "userDetail.lastName": req.body.lastName,
       "userDetail.gender": req.body.gender,
-      "userDetail.address": req.body.address,   
-    }, { new: true })
+      "userDetail.address": req.body.address,
+    },
+    { new: true }
+  );
 
-    if (!update) {
-        return res.json({ message: "Not Found" }).status(400);
-    }
-    res.send(update);
-}
+  if (!update) {
+    return res.json({ message: "Not Found" }).status(400);
+  }
+  res.send(update);
+};
 
 exports.logIn = async (req, res) => {
   const { email, password } = req.body;
@@ -67,8 +76,23 @@ exports.logIn = async (req, res) => {
   }
   const checkPassword = await bcrypt.compare(password, checkUser.password);
 
+  const access_Token = await jwt.sign(
+    {
+      name: checkUser.userDetail.firstName,
+      id: checkUser._id,
+      email: checkUser.email,
+    },
+    process.env.SECRET_KEY,
+    { expiresIn: "1d" }
+  );
+
   if (!checkPassword) {
     return res.json({ error: "Password is invalid" }).status(400);
   }
-  return res.json({ message: "Login Successful" }).status(201);
+  return res.json({ message: "Login Successful",accessToken:access_Token }).status(201);
 }
+
+exports.verifyJWT = ExpressJWT({
+secret: SECRETKEY,
+algorithms: ["HS256"]
+})
