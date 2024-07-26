@@ -1,9 +1,11 @@
 const { default: userModel } = require("../Model/userModel");
 const bcrypt = require("bcrypt");
 const UserModel = require("../Model/userModel");
-const jwt = require("jsonwebtoken")
-const { expressjwt: ExpressJWT} = require("express-jwt")
-const SECRETKEY = process.env.SECRET_KEY
+const jwt = require("jsonwebtoken");
+const { expressjwt: ExpressJWT } = require("express-jwt");
+const { default: mongoose } = require("mongoose");
+const { ReturnDocument } = require("mongodb");
+const SECRETKEY = process.env.SECRET_KEY;
 
 // controller
 
@@ -82,17 +84,48 @@ exports.logIn = async (req, res) => {
       id: checkUser._id,
       email: checkUser.email,
     },
-    process.env.SECRET_KEY,
+    SECRETKEY,
     { expiresIn: "1d" }
   );
 
   if (!checkPassword) {
     return res.json({ error: "Password is invalid" }).status(400);
   }
-  return res.json({ message: "Login Successful",accessToken:access_Token }).status(201);
-}
+  return res
+    .json({
+      message: "Login Successful",
+      accessToken: access_Token,
+      user: checkUser,
+    })
+    .status(201);
+};
 
-exports.verifyJWT = ExpressJWT({
-secret: SECRETKEY,
-algorithms: ["HS256"]
-})
+// get user by id
+exports.getUserById = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: "Invalid ID" });
+  }
+
+  const user = await UserModel.findOne({ _id: id });
+
+  if (!user) {
+    return res.json({ error: "User Not Found" }).status(400);
+  }
+
+  return res.json({ user: user }).status(200);
+};
+
+//delete user
+exports.deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  const user = await UserModel.findByIdAndDelete(id);
+
+  if (!user) {
+    return res.json({ error: "User not found " }).status(400);
+  }
+
+  return res.json({ message: "Account Deactivated " }).status(200);
+};

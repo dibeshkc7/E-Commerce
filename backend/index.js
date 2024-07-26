@@ -1,22 +1,27 @@
-const express = require('express');
+const express = require("express");
 
 require("dotenv").config();
-const db = require("./Connection/connection")
+const db = require("./Connection/connection");
 
+//initialize
 const app = express();
+const morgan = require("morgan")
 const port = process.env.PORT;
-const bodyParser=require('body-parser')
+const bodyParser = require("body-parser");
 
-const UserRoute = require ("./Route/userRoute")
+//route import
+//user route
+const UserRoute = require("./Route/userRoute");
 
-app.use(bodyParser.json())
+// server users
+app.use(bodyParser.json());
+app.use("/api", UserRoute);
 
-app.use('/api', UserRoute);
-
-app.get('/', (req, res) => {
-    res.send("This is an ecommerce server")
-})
+//server start index
+app.get("/", (req, res) => {
+  res.send("This is an ecommerce server");
+});
 
 app.listen(port, () => {
-    console.log(`Server get started at ${port}`)
-})
+  console.log(`Server get started at ${port}`);
+});
