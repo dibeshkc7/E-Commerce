@@ -5,40 +5,43 @@ const jwt = require("jsonwebtoken");
 const { expressjwt: ExpressJWT } = require("express-jwt");
 const { default: mongoose } = require("mongoose");
 const { ReturnDocument } = require("mongodb");
+// const { sendEmail } = require("../utils/sendMail");
+const sendMail = require("../utils/sendEmail");
 const SECRETKEY = process.env.SECRET_KEY;
 
 // controller
 
 exports.CreateUser = async (req, res) => {
-  const checkEmail = await UserModel.findOne({ email: req.body.email });
-  const checkContact = await UserModel.findOne({
-    "userDetail.phoneNumber": req.body.phoneNumber,
-  });
+  sendMail()
+  // const checkEmail = await UserModel.findOne({ email: req.body.email });
+  // const checkContact = await UserModel.findOne({
+  //   "userDetail.phoneNumber": req.body.phoneNumber,
+  // });
 
-  if (checkContact) {
-    return res.status(400).json({ error: "Contact already exi st" });
-  }
-  if (checkEmail) {
-    return res.status(400).json({ error: "Email already exist" });
-  } else {
-    const hashPassword = await bcrypt.hash(req.body.password, 10);
+  // if (checkContact) {
+  //   return res.status(400).json({ error: "Contact already exi st" });
+  // }
+  // if (checkEmail) {
+  //   return res.status(400).json({ error: "Email already exist" });
+  // } else {
+  //   const hashPassword = await bcrypt.hash(req.body.password, 10);
 
-    const CreateUser = await new UserModel({
-      email: req.body.email,
-      password: hashPassword,
-      "userDetail.firstName": req.body.firstName,
-      "userDetail.middleName": req.body.middleName,
-      "userDetail.lastName": req.body.lastName,
-      "userDetail.phoneNumber": req.body.phoneNumber,
-    });
+  //   const CreateUser = await new UserModel({
+  //     email: req.body.email,
+  //     password: hashPassword,
+  //     "userDetail.firstName": req.body.firstName,
+  //     "userDetail.middleName": req.body.middleName,
+  //     "userDetail.lastName": req.body.lastName,
+  //     "userDetail.phoneNumber": req.body.phoneNumber,
+  //   });
 
-    const saveUser = await CreateUser.save();
-    if (!saveUser) {
-      return res.status(400).json({ error: "User registration failed" });
-    } else {
-      return res.status(400).json({ message: "User registration succesful" });
-    }
-  }
+  //   const saveUser = await CreateUser.save();
+  //   if (!saveUser) {
+  //     return res.status(400).json({ error: "User registration failed" });
+  //   } else {
+  //     return res.status(400).json({ message: "User registration succesful" });
+  //   }
+  // }
 };
 
 exports.getAllUser = async (req, res) => {

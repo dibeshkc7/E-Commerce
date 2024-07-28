@@ -20,3 +20,4 @@ router.get("/getuser/:id", jwtMiddleware, getUserById);
 router.delete("/delete/:id", jwtMiddleware, deleteUser);
 
 module.exports = router;
+
