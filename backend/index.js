@@ -12,10 +12,15 @@ const bodyParser = require("body-parser");
 //route import
 //user route
 const UserRoute = require("./Route/userRoute");
+const CategoryRoute = require("./Route/categoryRoute")
+const ProductRoute = require("./Route/productRoute")
 
 // server users
 app.use(bodyParser.json());
 app.use("/api", UserRoute);
+app.use("/api", CategoryRoute);
+app.use("/api", ProductRoute);
+
 
 //server start index
 app.get("/", (req, res) => {

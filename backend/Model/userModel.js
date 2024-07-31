@@ -11,10 +11,10 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    default: "admin"
+    default: "admin",
   },
   isVerified: {
-    type: String,
+    type: Boolean,
     default: false,
   },
   userDetail: {
@@ -30,10 +30,10 @@ const UserSchema = new mongoose.Schema({
     phoneNumber: {
       type: String,
     },
-    gender: {
+    address: {
       type: String,
     },
-    address: {
+    gender: {
       type: String,
     },
   },

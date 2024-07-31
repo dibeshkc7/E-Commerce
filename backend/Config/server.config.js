@@ -1,5 +1,5 @@
-export const ServerConfig = {
-    DATABASE: process.env.DATABASE,
-    PORT: process.env.PORT
-}
+// export const ServerConfig = {
+//     DATABASE: process.env.DATABASE,
+//     PORT: process.env.PORT
+// }
 

@@ -1,23 +1,29 @@
 const express = require("express");
+
 const {
   CreateUser,
   getAllUser,
   updateUser,
   logIn,
-  verifyJWT,
   getUserById,
   deleteUser,
-} = require("../Controller/usercontroller");
-const {  jwtMiddleware } = require("..//middleware/middleware");
+  confirmUser,
+  forgotPassword,
+  resetPassword,
+  resendConfirmation,
+} = require("../Controller/userController");
+const { jwtMiddleware } = require("../middleware/middleware");
 
 const router = express.Router();
 
-router.post("/register", CreateUser);
-router.get("/users", jwtMiddleware, getAllUser);
-router.put("/update-user/:id", jwtMiddleware, updateUser);
 router.post("/login", logIn);
+router.post("/register", CreateUser);
+router.get("/users", getAllUser);
+router.put("/update-user/:id", jwtMiddleware, updateUser);
 router.get("/getuser/:id", jwtMiddleware, getUserById);
 router.delete("/delete/:id", jwtMiddleware, deleteUser);
-
+router.get("/confirm-email/:token", confirmUser);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password/:token", resetPassword);
+router.post("/resend-confirmation", resendConfirmation);
 module.exports = router;
-

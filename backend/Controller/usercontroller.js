@@ -1,49 +1,102 @@
-const { default: userModel } = require("../Model/userModel");
 const bcrypt = require("bcrypt");
-const UserModel = require("../Model/userModel");
 const jwt = require("jsonwebtoken");
-const { expressjwt: ExpressJWT } = require("express-jwt");
-const { default: mongoose } = require("mongoose");
-const { ReturnDocument } = require("mongodb");
-// const { sendEmail } = require("../utils/sendMail");
-const sendMail = require("../utils/sendEmail");
+const mongoose = require("mongoose");
+
+//
+const UserModel = require("../Model/userModel");
+// const { checkMongoDBId } = require("../utils/helper");
+const sendEmail = require("../utils/sendEmail");
+const { configDotenv } = require("dotenv");
+const userModel = require("../Model/userModel");
+
+//
 const SECRETKEY = process.env.SECRET_KEY;
 
-// controller
+// ------------------------------------Controller-------------------------------------
 
 exports.CreateUser = async (req, res) => {
-  sendMail()
-  // const checkEmail = await UserModel.findOne({ email: req.body.email });
-  // const checkContact = await UserModel.findOne({
-  //   "userDetail.phoneNumber": req.body.phoneNumber,
-  // });
+  const checkEmail = await UserModel.findOne({ email: req.body.email });
+  const checkContact = await UserModel.findOne({
+    "userDetail.phoneNumber": req.body.phoneNumber,
+  });
 
-  // if (checkContact) {
-  //   return res.status(400).json({ error: "Contact already exi st" });
-  // }
-  // if (checkEmail) {
-  //   return res.status(400).json({ error: "Email already exist" });
-  // } else {
-  //   const hashPassword = await bcrypt.hash(req.body.password, 10);
+  if (checkContact) {
+    return res.status(400).json({ error: "Already exist" });
+  }
 
-  //   const CreateUser = await new UserModel({
-  //     email: req.body.email,
-  //     password: hashPassword,
-  //     "userDetail.firstName": req.body.firstName,
-  //     "userDetail.middleName": req.body.middleName,
-  //     "userDetail.lastName": req.body.lastName,
-  //     "userDetail.phoneNumber": req.body.phoneNumber,
-  //   });
+  if (checkEmail) {
+    return res.status(400).json({ error: "Email already exist" });
+  }
 
-  //   const saveUser = await CreateUser.save();
-  //   if (!saveUser) {
-  //     return res.status(400).json({ error: "User registration failed" });
-  //   } else {
-  //     return res.status(400).json({ message: "User registration succesful" });
-  //   }
-  // }
+  // Generate token for email verification
+  const token = await jwt.sign(
+    {
+      name: req.body.firstName,
+      email: req.body.email,
+    },
+    SECRETKEY,
+    { expiresIn: "1h" }
+  );
+
+  if (!token) {
+    return res.status(400).json({ error: "Failed to generate token" });
+  }
+
+  // Send email
+  const url = `${process.env.APP_URL}/confirm-email/${token}`;
+
+  const mailOptions = {
+    userEmail: req.body.email,
+    subject: "Email verification",
+    text: "Please verify your email",
+    html: `<a href="${url}"><button>Verify Account</button></a>`,
+  };
+  sendEmail(mailOptions);
+
+  // Save users data in DB
+  const hashPassword = await bcrypt.hash(req.body.password, 10);
+  const createUser = await new UserModel({
+    email: req.body.email,
+    password: hashPassword,
+    "userDetail.firstName": req.body.firstName,
+    "userDetail.middleName": req.body.middleName,
+    "userDetail.lastName": req.body.lastName,
+    "userDetail.phoneNumber": req.body.phoneNumber,
+  });
+
+  const saveUser = await createUser.save();
+  if (!saveUser) {
+    return res.status(400).json({ error: "User registration failed" });
+  } else {
+    return res.status(200).json({
+      message: "User registration succesful, Please verify your email",
+    });
+  }
 };
 
+// ------------------------------------Verify Email--------------------------------
+exports.confirmUser = async (req, res) => {
+  const { token } = req.params;
+
+  const { email, name } = jwt.decode(token);
+  console.log(email);
+
+  const user = await UserModel.findOne({ email: email });
+
+  if (!user) {
+    return res.status(400).json({ error: "User not found" });
+  }
+  if (user.isVerified) {
+    return res
+      .status(400)
+      .json({ error: "Already verified, Please login to continue" });
+  }
+  user.isVerified = true;
+  await user.save();
+  return res.status(200).json({ message: "User verified successfully" });
+};
+
+// ------------------------------------Get All User---------------------------------
 exports.getAllUser = async (req, res) => {
   const users = await UserModel.find();
   if (!users) {
@@ -53,7 +106,7 @@ exports.getAllUser = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-  const update = await UserModel.findByIdAndUpdate(
+  const updateUser = await UserModel.findByIdAndUpdate(
     req.params.id,
     {
       "userDetail.firstName": req.body.firstName,
@@ -65,12 +118,13 @@ exports.updateUser = async (req, res) => {
     { new: true }
   );
 
-  if (!update) {
-    return res.json({ message: "Not Found" }).status(400);
+  if (!updateUser) {
+    return res.json({ message: "Not found" }).status(400);
   }
-  res.send(update);
+  res.send(updateUser);
 };
 
+// ------------------------------------Login--------------------------------
 exports.logIn = async (req, res) => {
   const { email, password } = req.body;
 
@@ -79,9 +133,13 @@ exports.logIn = async (req, res) => {
   if (!checkUser) {
     return res.json({ error: "User not found" }).status(400);
   }
-  const checkPassword = await bcrypt.compare(password, checkUser.password);
 
-  const access_Token = await jwt.sign(
+  if (!checkUser.isVerified) {
+    return res.status(400).json({ error: "Please verify your email" });
+  }
+
+  const checkPassword = await bcrypt.compare(password, checkUser.password);
+  const access_token = await jwt.sign(
     {
       name: checkUser.userDetail.firstName,
       id: checkUser._id,
@@ -96,14 +154,15 @@ exports.logIn = async (req, res) => {
   }
   return res
     .json({
-      message: "Login Successful",
-      accessToken: access_Token,
+      message: "Login successfull",
+      accessToken: access_token,
       user: checkUser,
     })
     .status(201);
 };
 
-// get user by id
+// ---------------------------------------Get User By Id--------------------------
+
 exports.getUserById = async (req, res) => {
   const { id } = req.params;
 
@@ -111,24 +170,136 @@ exports.getUserById = async (req, res) => {
     return res.status(400).json({ error: "Invalid ID" });
   }
 
-  const user = await UserModel.findOne({ _id: id });
+  // const user = await UserModel.findOne({ _id: id });
+  const user = await UserModel.findById(id);
 
   if (!user) {
-    return res.json({ error: "User Not Found" }).status(400);
+    return res.json({ error: "User not  found" }).status(400);
   }
 
   return res.json({ user: user }).status(200);
 };
 
-//delete user
+//----------------------------------Delete User--------------------------------------
+
 exports.deleteUser = async (req, res) => {
   const { id } = req.params;
 
   const user = await UserModel.findByIdAndDelete(id);
 
-  if (!user) {
-    return res.json({ error: "User not found " }).status(400);
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: "Invalid ID" });
   }
 
-  return res.json({ message: "Account Deactivated " }).status(200);
+  if (!user) {
+    return res.json({ error: "User not found" }).status(400);
+  }
+
+  return res.json({ message: "Account deactivated" }).status(200);
+};
+
+// -----------------------------------Forgot Password ---------------------
+
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  const user = await userModel.findOne({ email: email });
+
+  if (!user) {
+    return res.json({ error: "Password not saved" }).status(400);
+  }
+
+  //generate email for the email verification
+  const token = await jwt.sign(
+    {
+      name: req.body.firstName,
+      email: req.body.email,
+    },
+    SECRETKEY,
+    { expiresIn: "1h" }
+  );
+
+  if (!token) {
+    return res.status(400).json({ error: "Failed to generate token" });
+  }
+
+  // Send email
+  const url = `${process.env.APP_URL}/reset-passsword/${token}`;
+  const mailOptions = {
+    userEmail: req.body.email,
+    subject: "Reset Password",
+    text: "Reset password",
+    html: `<a href="${url}"><button>Reset Password</button></a>`,
+  };
+  sendEmail(mailOptions);
+
+  return res
+    .status(200)
+    .json({ message: "Reset link has been sent to your email" });
+};
+
+// reset----------------
+// password-------------
+exports.resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  const { email, id } = jwt.decode(token);
+
+  const user = await userModel.findOne({ email: email });
+
+  if (!user) {
+    return res.json({ error: "User not found" }).status(400);
+  }
+
+  const hashPassword = await bcrypt.hash(req.body.password, 10);
+  user.password = hashPassword;
+
+  await user.save();
+
+  if (!user) {
+    return res.json({ error: "Password not saved" }).status(400);
+  }
+  return res.json({ error: "Password reset successfully" }).status(200);
+};
+
+//--------------------------resend confirmation-----------------
+exports.resendConfirmation = async (req, res) => {
+  const { email } = req.body;
+
+  const user = await userModel.findOne({ email: email });
+
+  if (!user) {
+    return res.json({ error: "User not found" }).status(400);
+  }
+
+  if (user.isVerified) {
+    return res.json({ error: "User already veriified" }).status(400);
+  }
+
+  //generate email for the email verification
+  const token = await jwt.sign(
+    {
+      email: req.body.email,
+    },
+    SECRETKEY,
+    { expiresIn: "1h" }
+  );
+
+  if (!token) {
+    return res.status(400).json({ error: "Failed to generate token" });
+  }
+
+  // Send email
+  const url = `${process.env.APP_URL}/confirm-email/${token}`;
+  const mailOptions = {
+    userEmail: email,
+    subject: "Resend email verification",
+    text: "Please verify your email",
+    html: `<a href="${url}"><button>Verify Account</button></a>`,
+  };
+  sendEmail(mailOptions);
+
+  return res
+    .status(200)
+    .json({ message: "Confirmation link has been sent to your email" });
 };
