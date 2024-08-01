@@ -10,7 +10,7 @@ exports.addProduct = async(req, res)=>{
         productDescription: productDescription,
         productRating: productRating,
         productCategory: productCategory,
-        productImage: productImage,
+        productImage: req.file.path,
         totalProduct: totalProduct
     })
 

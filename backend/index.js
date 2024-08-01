@@ -5,22 +5,25 @@ const db = require("./Connection/connection");
 
 //initialize
 const app = express();
-const morgan = require("morgan")
+const morgan = require("morgan");
 const port = process.env.PORT;
 const bodyParser = require("body-parser");
 
 //route import
 //user route
 const UserRoute = require("./Route/userRoute");
-const CategoryRoute = require("./Route/categoryRoute")
-const ProductRoute = require("./Route/productRoute")
+const ProductRoute = require("./Route/productRoute");
+const CategoryRoute = require("./Route/categoryRoute");
 
 // server users
 app.use(bodyParser.json());
-app.use("/api", UserRoute);
-app.use("/api", CategoryRoute);
-app.use("/api", ProductRoute);
 
+app.use(morgan("dev"));
+app.use(express.static(__dirname + "/public/uploads"));
+
+app.use("/api", UserRoute);
+app.use("/api", ProductRoute);
+app.use("/api", CategoryRoute);
 
 //server start index
 app.get("/", (req, res) => {
