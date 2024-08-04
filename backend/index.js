@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require('express');
 
 require("dotenv").config();
 const db = require("./Connection/connection");
@@ -24,6 +24,8 @@ app.use(express.static(__dirname + "/public/uploads"));
 app.use("/api", UserRoute);
 app.use("/api", ProductRoute);
 app.use("/api", CategoryRoute);
+
+app.use('/public/uploads', express.static('public/uploads'));
 
 //server start index
 app.get("/", (req, res) => {

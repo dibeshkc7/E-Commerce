@@ -7,5 +7,6 @@ const router = express.Router();
 
 router.post("/addproduct", upload.single('productImage'), addProduct);
 router.get("/products", getAllProduct);
+// router.get("/related-products/:id", relatedProduct);
 
 module.exports = router;
