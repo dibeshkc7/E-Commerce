@@ -4,6 +4,8 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Link } from "react-router-dom";
 import Button from "../../component/reusable/button/button";
+import axios from "axios";
+import { AppConfig } from "../../config/app.config";
 
 interface IregisterForm {
   first_name: string;
@@ -26,19 +28,21 @@ const RegisterPage = () => {
       .string()
       .required("Password is required")
       .min(8, "Password must be at least 8 characters")
-      .matches(
-        /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&#])[A-Za-z\d@$!%?&#]+$/,
-        "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character"
-      ),
+      // .matches(
+      //   /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&#])[A-Za-z\d@$!%?&#]+$/,
+      //   "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character"
+      // ),
+      ,
 
     confirm_password: yup
       .string()
       .required("Password is required")
       .min(8, "Password must be at least 8 characters")
-      .matches(
-        /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&#])[A-Za-z\d@$!%?&#]+$/,
-        "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character"
-      ),
+      // .matches(
+      //   // /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&#])[A-Za-z\d@$!%?&#]+$/,
+      //   "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character"
+      // )
+      ,
 
     phone_number: yup.number().required("Phone number is required"),
   });
@@ -52,8 +56,20 @@ const RegisterPage = () => {
     resolver: yupResolver(registerValidation),
   });
 
-  const onRegister = useCallback((values: IregisterForm) => {
-    console.log(values);
+  // register function
+  const onRegister = useCallback(async (values: IregisterForm) => {
+    try {
+      const res = await axios.post(`${AppConfig.API_URL}/register`, {
+        email: values.email_address,
+        firstName: values.first_name,
+        lastName: values.last_name,
+        password: values.password,
+        phoneNumber: values.phone_number,
+      });
+      console.log(res);
+    } catch (error: unknown) {
+      console.log(error);
+    }
   }, []);
 
   return (
