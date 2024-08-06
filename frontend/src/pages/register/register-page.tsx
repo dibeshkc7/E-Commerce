@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import Button from "../../component/reusable/button/button";
 import axios from "axios";
 import { AppConfig } from "../../config/app.config";
+import { toast } from "sonner";
+import { errorMessage } from "../../utils/helper";
 
 interface IregisterForm {
   first_name: string;
@@ -27,23 +29,19 @@ const RegisterPage = () => {
     password: yup
       .string()
       .required("Password is required")
-      .min(8, "Password must be at least 8 characters")
-      // .matches(
-      //   /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&#])[A-Za-z\d@$!%?&#]+$/,
-      //   "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character"
-      // ),
-      ,
-
+      .min(8, "Password must be at least 8 characters"),
+    // .matches(
+    //   /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&#])[A-Za-z\d@$!%?&#]+$/,
+    //   "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character"
+    // ),
     confirm_password: yup
       .string()
       .required("Password is required")
-      .min(8, "Password must be at least 8 characters")
-      // .matches(
-      //   // /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&#])[A-Za-z\d@$!%?&#]+$/,
-      //   "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character"
-      // )
-      ,
-
+      .min(8, "Password must be at least 8 characters"),
+    // .matches(
+    //   // /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&#])[A-Za-z\d@$!%?&#]+$/,
+    //   "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character"
+    // )
     phone_number: yup.number().required("Phone number is required"),
   });
 
@@ -59,16 +57,18 @@ const RegisterPage = () => {
   // register function
   const onRegister = useCallback(async (values: IregisterForm) => {
     try {
-      const res = await axios.post(`${AppConfig.API_URL}/register`, {
+      const { data } = await axios.post(`${AppConfig.API_URL}/register`, {
         email: values.email_address,
         firstName: values.first_name,
         lastName: values.last_name,
         password: values.password,
         phoneNumber: values.phone_number,
       });
-      console.log(res);
+      console.log(data);
+      toast.success(data.response?.message || "Register successfully");
     } catch (error: unknown) {
       console.log(error);
+      toast.error(errorMessage(error));
     }
   }, []);
 

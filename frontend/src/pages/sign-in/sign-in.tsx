@@ -1,85 +1,97 @@
-import React from "react";
+import React, { useCallback } from "react";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import Button from "../../component/reusable/button/button";
+import { yupResolver } from "@hookform/resolvers/yup";
+import axios from "axios";
+import { toast } from "sonner";
+import { errorMessage } from "../../utils/helper";
+import { AppConfig } from "../../config/app.config";
+
+interface ILoginForm {
+  email: string;
+  password: string;
+}
 
 const SigninPage = () => {
+  const loginSchema = yup.object().shape({
+    email: yup.string().email().required("Email is required"),
+    password: yup.string().required(),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ILoginForm>({
+    resolver: yupResolver(loginSchema),
+  });
+
+  const onLogin = useCallback(async (values: ILoginForm) => {
+    try {
+      const { data } = await axios.post(`${AppConfig.API_URL}/login`, {
+        email: values.email,
+        password: values.password,
+      });
+      toast.success(data.message || "Login successfully");
+    } catch (error) {
+      toast.error(errorMessage(error));
+    }
+  }, []);
+
   return (
-    <div>
-      {/* <!-- Modal body --> */}
-      <div className="p-4 md:p-5">
-        <form className="space-y-4" action="#">
-          <div>
-            <label
-              htmlFor="email"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Your email
-            </label>
-            <input
-              type="email"
-              name="email"
-              id="email"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-              placeholder="name@company.com"
-              required
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Your password
-            </label>
-            <input
-              type="password"
-              name="password"
-              id="password"
-              placeholder="••••••••"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-              required
-            />
-          </div>
-          <div className="flex justify-between">
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
-                <input
-                  id="remember"
-                  type="checkbox"
-                  value=""
-                  className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-600 dark:border-gray-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
-                  required
-                />
-              </div>
-              <label
-                htmlFor="remember"
-                className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-              >
-                Remember me
-              </label>
-            </div>
-            <a
-              href="#"
-              className="text-sm text-blue-700 hover:underline dark:text-blue-500"
-            >
-              Lost Password?
-            </a>
-          </div>
-          <button
-            type="submit"
-            className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+    <div className="w-[400px] mx-auto mt-10">
+      <h1 className="text-4xl font-bold mt-10 mb-4">Login</h1>
+      <form onSubmit={handleSubmit(onLogin)}>
+        <div>
+          <label
+            htmlFor="first_name"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Login to your account
-          </button>
-          <div className="text-sm font-medium text-gray-500 dark:text-gray-300">
-            Not registered?{" "}
-            <a
-              href="#"
-              className="text-blue-700 hover:underline dark:text-blue-500"
-            >
-              Create account
-            </a>
-          </div>
-        </form>
-      </div>
+            Email
+          </label>
+          <input
+            type="email"
+            {...register("email")}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            placeholder="John"
+          />
+          {errors.email && (
+            <span className="text-red-600 text-sm">{errors.email.message}</span>
+          )}
+        </div>
+        <div>
+          <label
+            htmlFor="first_name"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Password
+          </label>
+          <input
+            type="text"
+            id="password"
+            {...register("password")}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            placeholder="John"
+          />
+          {errors.password && (
+            <span className="text-red-600 text-sm">
+              {errors.password.message}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-5">
+          <Button
+            buttonType={"submit"}
+            buttonColor={{
+              primary: true,
+            }}
+          >
+            Sign In
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };

@@ -1,5 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { Toaster } from "sonner";
+
 import App from "./App";
 import "./index.css";
 import { Provider } from "react-redux";
@@ -11,6 +13,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Provider store={store}>
+      <Toaster position="top-right" />
       <App />
     </Provider>
   </React.StrictMode>

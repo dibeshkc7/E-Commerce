@@ -119,7 +119,7 @@ exports.updateUser = async (req, res) => {
   );
 
   if (!updateUser) {
-    return res.json({ message: "Not found" }).status(400);
+    return res.status(400).json({ message: "Not found" });
   }
   res.send(updateUser);
 };
@@ -131,7 +131,7 @@ exports.logIn = async (req, res) => {
   const checkUser = await UserModel.findOne({ email: email });
 
   if (!checkUser) {
-    return res.json({ error: "User not found" }).status(400);
+    return res.status(400).json({ error: "User not found" });
   }
 
   if (!checkUser.isVerified) {
@@ -150,15 +150,13 @@ exports.logIn = async (req, res) => {
   );
 
   if (!checkPassword) {
-    return res.json({ error: "Password is invalid" }).status(400);
+    return res.status(400).json({ error: "Password is invalid" });
   }
-  return res
-    .json({
-      message: "Login successfull",
-      accessToken: access_token,
-      user: checkUser,
-    })
-    .status(201);
+  return res.status(201).json({
+    message: "Login successfull",
+    accessToken: access_token,
+    user: checkUser,
+  });
 };
 
 // ---------------------------------------Get User By Id--------------------------
@@ -174,10 +172,10 @@ exports.getUserById = async (req, res) => {
   const user = await UserModel.findById(id);
 
   if (!user) {
-    return res.json({ error: "User not  found" }).status(400);
+    return res.status(400).json({ error: "User not  found" });
   }
 
-  return res.json({ user: user }).status(200);
+  return res.status(200).json({ user: user });
 };
 
 //----------------------------------Delete User--------------------------------------
@@ -192,10 +190,10 @@ exports.deleteUser = async (req, res) => {
   }
 
   if (!user) {
-    return res.json({ error: "User not found" }).status(400);
+    return res.status(400).json({ error: "User not found" });
   }
 
-  return res.json({ message: "Account deactivated" }).status(200);
+  return res.status(200).json({ message: "Account deactivated" });
 };
 
 // -----------------------------------Forgot Password ---------------------
@@ -205,7 +203,7 @@ exports.forgotPassword = async (req, res) => {
   const user = await userModel.findOne({ email: email });
 
   if (!user) {
-    return res.json({ error: "Password not saved" }).status(400);
+    return res.status(400).json({ error: "Password not saved" });
   }
 
   //generate email for the email verification
@@ -248,7 +246,7 @@ exports.resetPassword = async (req, res) => {
   const user = await userModel.findOne({ email: email });
 
   if (!user) {
-    return res.json({ error: "User not found" }).status(400);
+    return res.status(400).json({ error: "User not found" });
   }
 
   const hashPassword = await bcrypt.hash(req.body.password, 10);
@@ -257,9 +255,9 @@ exports.resetPassword = async (req, res) => {
   await user.save();
 
   if (!user) {
-    return res.json({ error: "Password not saved" }).status(400);
+    return res.status(400).json({ error: "Password not saved" });
   }
-  return res.json({ error: "Password reset successfully" }).status(200);
+  return res.status(200).json({ error: "Password reset successfully" });
 };
 
 //--------------------------resend confirmation-----------------
@@ -269,11 +267,11 @@ exports.resendConfirmation = async (req, res) => {
   const user = await userModel.findOne({ email: email });
 
   if (!user) {
-    return res.json({ error: "User not found" }).status(400);
+    return res.status(400).json({ error: "User not found" });
   }
 
   if (user.isVerified) {
-    return res.json({ error: "User already veriified" }).status(400);
+    return res.status(400).json({ error: "User already veriified" });
   }
 
   //generate email for the email verification
