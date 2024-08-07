@@ -14,6 +14,11 @@ import ContactPage from "./pages/Contact/contact-page";
 import Dashboard from "./pages/Dashboard/dashboard";
 import AuthLayout from "./layout/Auth-layout/auth";
 import DefaultLayout from "./layout/Default/default";
+import GetProduct from "./pages/Dashboard/product/get-product";
+import AddProductForm from "./pages/Dashboard/product/add-product";
+import GetCategory from "./pages/Dashboard/category/get-category";
+import GetOrder from "./pages/Dashboard/orders/get-order";
+import GetCustomer from "./pages/Dashboard/customers/get-customer";
 
 const App = () => {
   return (
@@ -39,8 +44,24 @@ const App = () => {
           <Route path="/Contact" element={<ContactPage />} />
         </Route>
 
+{/* Authentication Layout         */}
+
         <Route element={<AuthLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* product */}
+          <Route path="/dashboard/products" element={<GetProduct />} />
+          <Route path="/dashboard/add-product" element={<AddProductForm />} />
+
+          {/* category */}
+          <Route path="/dashboard/category" element={<GetCategory />} />
+
+          {/* orders */}
+          <Route path="/dashboard/orders" element={<GetOrder />} />
+
+          {/* customers */}
+          <Route path="/dashboard/customers" element={<GetCustomer />} />
+
         </Route>
       </Routes>
     </Router>
