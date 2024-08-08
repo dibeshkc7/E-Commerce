@@ -7,6 +7,8 @@ import axios from "axios";
 import { toast } from "sonner";
 import { errorMessage } from "../../utils/helper";
 import { AppConfig } from "../../config/app.config";
+import Cookie from "js-cookie";
+import { Navigate, useNavigate } from "react-router-dom";
 
 interface ILoginForm {
   email: string;
@@ -14,6 +16,7 @@ interface ILoginForm {
 }
 
 const SigninPage = () => {
+  const navigate = useNavigate();
   const loginSchema = yup.object().shape({
     email: yup.string().email().required("Email is required"),
     password: yup.string().required(),
@@ -33,11 +36,16 @@ const SigninPage = () => {
         email: values.email,
         password: values.password,
       });
+
+      Cookie.set("accessToken", data.accessToken);
+      Cookie.set("userId", data.user._id);
+
+      navigate("/dashboard");
       toast.success(data.message || "Login successfully");
     } catch (error) {
       toast.error(errorMessage(error));
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="w-[400px] mx-auto mt-10">

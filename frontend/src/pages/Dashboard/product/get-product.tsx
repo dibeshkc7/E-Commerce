@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import useSWR from "swr";
+import { getProducts } from "../../../API/productApi";
 
 const GetProduct = () => {
-  return (
-    <div>get-product</div>
-  )
-}
+  const { data } = useSWR("products", getProducts);
 
-export default GetProduct
+  console.log(data);
+  return <div>Product</div>;
+};
+
+export default GetProduct;
