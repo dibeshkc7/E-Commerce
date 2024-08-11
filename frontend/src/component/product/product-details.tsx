@@ -23,23 +23,23 @@ const ProductDetail = ({ id}: Props) => {
   }, [id])
 
   return (
-    <div>
-      <div key={product?.id} className="border p-5 rounded-lg space-y-5">
-            <div className="flex items-center justify-center">
-              <img src={product?.image} alt={product?.title} className="h-32 w-32" />
-            </div>
-            <div className="border-t mt-2">
-              <p className="font-bold capitalize">{product?.category}</p>
-              <p className="line-clamp-1">{product?.title}</p>
-              <div><span className="font-bold">Rating:</span> {product?.rating?.rate}, {product?.rating?.count}</div>
-              <p><span className="font-bold">Price: </span> $ {product?.price}</p>
-              <p className="line-clamp-2">{product?.description}</p>
-            </div>
-            <div>
-            </div>
-          </div>
+     <div>
+    {/* //   <div key={product?.id} className="border p-5 rounded-lg space-y-5">
+    //         <div className="flex items-center justify-center">
+    //           <img src={product?.image} alt={product?.title} className="h-32 w-32" />
+    //         </div>
+    //         <div className="border-t mt-2">
+    //           <p className="font-bold capitalize">{product?.category}</p>
+    //           <p className="line-clamp-1">{product?.title}</p>
+    //           <div><span className="font-bold">Rating:</span> {product?.rating?.rate}, {product?.rating?.count}</div>
+    //           <p><span className="font-bold">Price: </span> $ {product?.price}</p>
+    //           <p className="line-clamp-2">{product?.description}</p>
+    //         </div>
+    //         <div>
+    //         </div>
+    //       </div> */}
 
-    </div>
+     </div>
   )
 }
 

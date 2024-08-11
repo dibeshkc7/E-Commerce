@@ -19,6 +19,7 @@ import AddProductForm from "./pages/Dashboard/product/add-product";
 import GetCategory from "./pages/Dashboard/category/get-category";
 import GetOrder from "./pages/Dashboard/orders/get-order";
 import GetCustomer from "./pages/Dashboard/customers/get-customer";
+import ProductPage from "./pages/Products/Product";
 
 const App = () => {
   return (
@@ -30,7 +31,7 @@ const App = () => {
         <Route element={<DefaultLayout />}>
           <Route path="/" element={<Home />} />
 
-          <Route path="/products" element={<Product />} />
+          <Route path="/products" element={<ProductPage />} />
           <Route path="/products/:id" element={<SingleProduct />} />
 
           <Route path="/pricing" element={<Pricing />} />
@@ -44,7 +45,7 @@ const App = () => {
           <Route path="/Contact" element={<ContactPage />} />
         </Route>
 
-{/* Authentication Layout         */}
+        {/* Authentication Layout         */}
 
         <Route element={<AuthLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
@@ -61,7 +62,6 @@ const App = () => {
 
           {/* customers */}
           <Route path="/dashboard/customers" element={<GetCustomer />} />
-
         </Route>
       </Routes>
     </Router>
