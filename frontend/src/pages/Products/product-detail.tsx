@@ -11,7 +11,7 @@ const SingleProduct = () => {
     <div>
         {
             id &&
-            <ProductDetail id={Number(id)} />
+            <ProductDetail id={id} />
         }
     </div>
   )
