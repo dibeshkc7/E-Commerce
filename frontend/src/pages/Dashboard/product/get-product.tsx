@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import React from "react";
+import React, { useState } from "react";
 import { getProducts } from "../../../API/productApi";
 
 import {
@@ -13,12 +13,30 @@ import {
 } from "../../../@/components/ui/table";
 import Products from "../../../component/product/products";
 import { displayImage } from "../../../utils/helper";
+import { Link } from "react-router-dom";
+import Button from "../../../component/reusable/button/button";
+import DeleteModal from "./delete-modal";
+
+type Imodal = "update" | "delete";
 
 const GetProduct = () => {
+  const [modal, setModal] = useState<Imodal | null>(null);
   const { data: products } = useSWR("viewproduct", getProducts);
 
   return (
     <div>
+      <div className="my-2 justify-end flex">
+        <Link to={"/dashboard/add-product"}>
+          <Button
+            buttonType={"button"}
+            buttonColor={{
+              primary: true,
+            }}
+          >
+            Add Product
+          </Button>
+        </Link>
+      </div>
       <Table>
         <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader>
@@ -29,7 +47,7 @@ const GetProduct = () => {
             <TableHead>Product category</TableHead>
             <TableHead>Product price</TableHead>
             <TableHead>Total products</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
+            <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -47,19 +65,34 @@ const GetProduct = () => {
                 />
               </TableCell>
               <TableCell>{product.productCategory.categoryName}</TableCell>
+
               <TableCell className="text-center">
                 {product.productPrice}
+              </TableCell>
+              <TableCell>{product.totalProduct}</TableCell>
+              
+
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <Button
+                    buttonType={"button"}
+                    buttonColor={{
+                      primary: true,
+                    }}
+                  >
+                    Update
+                  </Button>
+                  <DeleteModal />
+                  
+                </div>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
-        {/* <TableFooter>
-        <TableRow>
-          <TableCell colSpan={3}>Total</TableCell>
-          <TableCell className="text-right">$2,500.00</TableCell>
-        </TableRow>
-      </TableFooter> */}
       </Table>
+
+      {/* ---------modal-------- */}
+      {/* <DeleteModal /> */}
     </div>
   );
 };
