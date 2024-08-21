@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import Button from "../component/reusable/button/button";
 import { useEffect, useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 
 const NavItems = [
   {
@@ -26,6 +27,7 @@ const NavItems = [
 ];
 
 const Header = () => {
+  const { accessToken } = useAuth();
   const location = useLocation();
   const [isLogin, setIsLogin] = useState(false);
 
@@ -101,33 +103,42 @@ const Header = () => {
             </ul>
           </div>
           <div className="flex gap-2 items-center">
-            <Link to="/Login">
-              <Button
-                buttonType={"button"}
-                buttonColor={isLogin ? { primary: true } : { outline: true }}
-                rounded
-              >
-                Sign In
-              </Button>
-            </Link>
-            <Link to="/Register">
-              <Button
-                buttonType={"button"}
-                buttonColor={!isLogin ? { primary: true } : { outline: true }}
-                rounded
-              >
-                Register
-              </Button>
-            </Link>
-            <Link to="/Dashboard">
-              <Button
-                buttonType={"button"}
-                buttonColor={isLogin ? { primary: true } : { outline: true }}
-                rounded
-              >
-                Dashboard
-              </Button>
-            </Link>
+            {!accessToken ? (
+              <>
+                <Link to="/Login">
+                  <Button
+                    buttonType={"button"}
+                    buttonColor={
+                      isLogin ? { primary: true } : { outline: true }
+                    }
+                    rounded
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/Register">
+                  <Button
+                    buttonType={"button"}
+                    buttonColor={
+                      !isLogin ? { primary: true } : { outline: true }
+                    }
+                    rounded
+                  >
+                    Register
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <Link to="/Dashboard">
+                <Button
+                  buttonType={"button"}
+                  buttonColor={isLogin ? { primary: true } : { outline: true }}
+                  rounded
+                >
+                  Dashboard
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </nav>

@@ -15,6 +15,7 @@ const bodyParser = require("body-parser");
 const UserRoute = require("./Route/userRoute");
 const ProductRoute = require("./Route/productRoute");
 const CategoryRoute = require("./Route/categoryRoute");
+const OrderRoute = require("./Route/orderRoute");
 
 // server users
 app.use(bodyParser.json());
@@ -25,6 +26,7 @@ app.use(express.static(__dirname + "/public/uploads"));
 app.use("/api", UserRoute);
 app.use("/api", ProductRoute);
 app.use("/api", CategoryRoute);
+app.use("/api", OrderRoute);
 
 app.use("/public/uploads", express.static("public/uploads"));
 

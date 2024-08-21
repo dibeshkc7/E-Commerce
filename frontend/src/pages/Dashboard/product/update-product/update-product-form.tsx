@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import * as yup from "yup";
@@ -8,22 +8,23 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 import { toast } from "sonner";
 
-import Button from "../../../component/reusable/button/button";
-import { AppConfig } from "../../../config/app.config";
-import { errorMessage } from "../../../utils/helper";
+import Button from "../../../../component/reusable/button/button";
+import { AppConfig } from "../../../../config/app.config";
+import { displayImage, errorMessage } from "../../../../utils/helper";
 import {
   SelectContent,
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "../../../@/components/ui/select";
+} from "../../../../@/components/ui/select";
 import {
   Select,
   SelectGroup,
   SelectItem,
-} from "../../../@/components/ui/select";
+} from "../../../../@/components/ui/select";
 import useSWR from "swr";
-import { getCategories } from "../../../API/categoryApi";
+import { getCategories } from "../../../../API/categoryApi";
+import { IProduct } from "../../../../interface/product";
 
 interface IProductForm {
   product_name: string;
@@ -45,8 +46,13 @@ const productValidation = yup.object().shape({
   product_image: yup.mixed(),
 });
 
-const AddProductForm = () => {
+interface Props {
+  product: IProduct;
+}
+
+const UpdateProductForm = ({ product }: Props) => {
   const { data: categories } = useSWR("/viewcategory", getCategories);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -56,6 +62,15 @@ const AddProductForm = () => {
     formState: { errors },
   } = useForm<IProductForm>({
     resolver: yupResolver(productValidation),
+    defaultValues: {
+      product_name: product?.productName || "",
+      product_category: product?.productCategory._id || "",
+      product_price: Number(product?.productPrice) || 0,
+      product_rating: Number(product?.productRating) || 0,
+      product_description: product?.productDescription || "",
+      total_product: product?.totalProduct || 0,
+      product_image: product.productImage || "",
+    },
   });
 
   const onAddProduct = useCallback(
@@ -73,12 +88,11 @@ const AddProductForm = () => {
       productData.append("productCategory", values.product_category);
       productData.append("productProduct", String(values.product_name));
       productData.append("productImage", productImage);
-      productData.append("totalProduct",String(values.total_product))
-
+      productData.append("totalProduct", String(values.total_product));
 
       try {
-        const { data } = await axios.post(
-          `${AppConfig.API_URL}/addproduct`,
+        const { data } = await axios.put(
+          `${AppConfig.API_URL}/update-product/${product._id}`,
           productData,
           {
             headers: {
@@ -87,7 +101,8 @@ const AddProductForm = () => {
           }
         );
         console.log(data);
-        toast.success(data.response?.message || "Added successfully");
+        toast.success(data.response?.message || "Update successfully");
+        navigate("/dashboard/products");
         reset();
       } catch (error: unknown) {
         toast.error(errorMessage(error));
@@ -99,7 +114,7 @@ const AddProductForm = () => {
   return (
     <div>
       <div className="my-6 flex justify-between container">
-      <h6 className="text-2xl font-bold">Add Product</h6>
+        <h6 className="text-2xl font-bold">Update Product</h6>
         <Link to={"/dashboard/products"}>
           <Button
             buttonType={"button"}
@@ -115,6 +130,13 @@ const AddProductForm = () => {
         className="max-w-sm mx-auto border rounded-lg"
         onSubmit={handleSubmit(onAddProduct)}
       >
+        <div className="pt-5">
+          <img
+            src={displayImage(product.productImage)}
+            alt={product.productName}
+            className="h-[200px] w-[200px] mx-auto"
+          />
+        </div>
         <div className="m-5">
           <div className="mb-5">
             <label
@@ -265,4 +287,4 @@ const AddProductForm = () => {
   );
 };
 
-export default AddProductForm;
+export default UpdateProductForm;

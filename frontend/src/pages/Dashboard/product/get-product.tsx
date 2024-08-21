@@ -25,7 +25,8 @@ const GetProduct = () => {
 
   return (
     <div>
-      <div className="my-2 justify-end flex">
+      <div className="my-6 flex justify-between items-center px-4 pb-4 border-b">
+        <h6 className="text-2xl font-bold">All Products</h6>
         <Link to={"/dashboard/add-product"}>
           <Button
             buttonType={"button"}
@@ -70,20 +71,20 @@ const GetProduct = () => {
                 {product.productPrice}
               </TableCell>
               <TableCell>{product.totalProduct}</TableCell>
-              
 
               <TableCell>
                 <div className="flex items-center gap-2">
-                  <Button
-                    buttonType={"button"}
-                    buttonColor={{
-                      primary: true,
-                    }}
-                  >
-                    Update
-                  </Button>
+                  <Link to={`/dashboard/update-product/${product._id}`}>
+                    <Button
+                      buttonType={"button"}
+                      buttonColor={{
+                        primary: true,
+                      }}
+                    >
+                      Update
+                    </Button>
+                  </Link>
                   <DeleteModal />
-                  
                 </div>
               </TableCell>
             </TableRow>

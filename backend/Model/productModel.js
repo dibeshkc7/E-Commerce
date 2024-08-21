@@ -30,7 +30,7 @@ const productSchema = new mongoose.Schema({
     productImage: {
         type: String
     },
-    totalImage: {
+    totalProduct: {
         type: Number,
         default: 0 
     }
