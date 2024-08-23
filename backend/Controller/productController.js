@@ -129,3 +129,16 @@ exports.findProduct = (req, res) => {
       return res.status(400).json({ error: "something went wrong" });
     });
 };
+
+exports.deleteProduct = async (req, res) => {
+  let product = await ProductModel.findByIdAndDelete(req.params.id);
+  if (!product) {
+    return res.status(400).json({ error: "Error" });
+  } else {
+    if (product == null) {
+      return res.status(400).json({ error: "Product not found" });
+    } else {
+      return res.status(200).json({ message: "deleted succesfully" });
+    }
+  }
+};

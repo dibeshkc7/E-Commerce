@@ -1,5 +1,5 @@
-import useSWR from "swr";
-import React, { useState } from "react";
+import useSWR, { mutate } from "swr";
+import React, { useCallback, useState } from "react";
 import { getProducts } from "../../../API/productApi";
 
 import {
@@ -12,16 +12,40 @@ import {
   TableRow,
 } from "../../../@/components/ui/table";
 import Products from "../../../component/product/products";
-import { displayImage } from "../../../utils/helper";
+import { displayImage, errorMessage } from "../../../utils/helper";
 import { Link } from "react-router-dom";
 import Button from "../../../component/reusable/button/button";
 import DeleteModal from "./delete-modal";
+import { AppConfig } from "../../../config/app.config";
+import axios from "axios";
+import { toast } from "sonner";
+import { IProduct } from "../../../interface/product";
 
 type Imodal = "update" | "delete";
 
+// get product component
+
 const GetProduct = () => {
-  const [modal, setModal] = useState<Imodal | null>(null);
   const { data: products } = useSWR("viewproduct", getProducts);
+
+  const [modal, setModal] = useState<Imodal | null>(null);
+  const [product, setProduct] = useState<IProduct | null>(null);
+
+  const deleteProduct = useCallback(async (id: string) => {
+    try {
+      const { data } = await axios.delete(
+        `${AppConfig.API_URL}/delete-product/${id}`
+      );
+
+      const updateProduct = products?.filter((p) => p._id !== product?._id);
+      mutate("viewproduct", updateProduct);
+
+      toast.message(data.message);
+      setModal(null);
+    } catch (error) {
+      toast.error(errorMessage(error));
+    }
+  }, []);
 
   return (
     <div>
@@ -84,7 +108,19 @@ const GetProduct = () => {
                       Update
                     </Button>
                   </Link>
-                  <DeleteModal />
+                  <Button
+                    buttonType={"button"}
+                    buttonColor={{
+                      secondary: true,
+                    }}
+                    onClick={() => {
+                      setModal("delete");
+                      setProduct(product);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                  {/* <DeleteModal onDelete={() => deleteProduct(product._id)} /> */}
                 </div>
               </TableCell>
             </TableRow>
@@ -93,7 +129,13 @@ const GetProduct = () => {
       </Table>
 
       {/* ---------modal-------- */}
-      {/* <DeleteModal /> */}
+      {product && (
+        <DeleteModal
+          open={modal === "delete"}
+          onClose={() => setModal(null)}
+          onDelete={() => deleteProduct(product._id)}
+        />
+      )}
     </div>
   );
 };

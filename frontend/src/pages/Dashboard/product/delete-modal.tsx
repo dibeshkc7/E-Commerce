@@ -9,28 +9,35 @@ import {
 } from "../../../@/components/ui/dialog";
 import Button from "../../../component/reusable/button/button";
 
-const DeleteModal = () => {
+interface Props {
+  onDelete: () => void;
+  open: boolean;
+  onClose: () => void;
+}
+
+const DeleteModal = ({ onDelete, open, onClose }: Props) => {
   return (
     <div>
-      <Dialog>
-        <DialogTrigger>
-          <Button
-            buttonType={"button"}
-            buttonColor={{
-              secondary: true,
-            }}
-          >
-            Delete
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
+      <Dialog open={open} onOpenChange={onClose}>
+        <DialogContent className="bg-white">
           <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
-            <DialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-            </DialogDescription>
+            <DialogTitle>
+              Are you sure do you want to delete this product?
+            </DialogTitle>
+            <DialogDescription>This action cannot be undone.</DialogDescription>
           </DialogHeader>
+
+          <div className="flex justify-end">
+            <Button
+              buttonType={"button"}
+              buttonColor={{
+                secondary: true,
+              }}
+              onClick={onDelete}
+            >
+              Delete
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
