@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import CountSlice from "./count-slice/count";
+import OrderSlice from "./slice/order-slice";
 
 export const store = configureStore({
   reducer: {
     count: CountSlice,
+    order: OrderSlice
   },
 });
 

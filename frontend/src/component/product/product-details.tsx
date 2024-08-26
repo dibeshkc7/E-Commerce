@@ -2,6 +2,11 @@ import useSWR from "swr";
 import { getProductById } from "../../API/productApi";
 import RelatedProducts from "./related-products";
 import { displayImage } from "../../utils/helper";
+import Button from "../reusable/button/button";
+import { useAppDispatch } from "../../hooks/redux";
+import { useCallback } from "react";
+import { addProductToCart } from "../../redux/slice/order-slice";
+import { toast } from "sonner";
 
 interface Props {
   id: string;
@@ -9,6 +14,18 @@ interface Props {
 
 const ProductDetail = ({ id }: Props) => {
   const { data: product } = useSWR(`product/${id}`, getProductById);
+  const dispatch = useAppDispatch();
+
+  const handleAddToCart = useCallback(async () => {
+    const product = {
+      productId: id,
+      totalOrder: 1
+    }
+
+    dispatch(addProductToCart(product))
+    toast.message("Added to cart")
+  }, [dispatch, id])
+
 
   return (
     <div>
@@ -38,6 +55,13 @@ const ProductDetail = ({ id }: Props) => {
           </div>
           <div></div>
         </div>
+        <Button
+          buttonType="button"
+          buttonColor={{ primary: true }}
+          onClick={handleAddToCart}
+        >
+          Add to cart
+        </Button>
       </div>
       <RelatedProducts id={id} />
     </div>
