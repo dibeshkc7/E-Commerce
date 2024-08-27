@@ -1,5 +1,6 @@
 import useSWR from "swr";
 import { getProductById } from "../../API/productApi";
+
 import RelatedProducts from "./related-products";
 import { displayImage } from "../../utils/helper";
 import Button from "../reusable/button/button";
@@ -7,6 +8,8 @@ import { useAppDispatch } from "../../hooks/redux";
 import { useCallback } from "react";
 import { addProductToCart } from "../../redux/slice/order-slice";
 import { toast } from "sonner";
+import { useAuth } from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   id: string;
@@ -15,17 +18,24 @@ interface Props {
 const ProductDetail = ({ id }: Props) => {
   const { data: product } = useSWR(`product/${id}`, getProductById);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const { accessToken } = useAuth();
 
   const handleAddToCart = useCallback(async () => {
     const product = {
       productId: id,
-      totalOrder: 1
+      totalOrder: 1,
+    };
+
+    if (accessToken) {
+      dispatch(addProductToCart(product));
+      toast.message("Added to cart");
+    } else {
+      toast.error("Please login");
+      navigate("/login");
     }
-
-    dispatch(addProductToCart(product))
-    toast.message("Added to cart")
-  }, [dispatch, id])
-
+  }, [accessToken, dispatch, id, navigate]);
 
   return (
     <div>

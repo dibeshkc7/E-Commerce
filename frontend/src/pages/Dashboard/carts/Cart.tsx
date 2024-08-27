@@ -7,11 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from "../../../@/components/ui/table";
-import { useAppDispatch } from "../../../hooks/redux";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { getOrderProducts } from "../../../redux/slice/order-slice";
+import { store } from "../../../redux/store";
 
 const Cart = () => {
     const dispatch = useAppDispatch();
+    const { orderProducts } = useAppSelector((store) => store.order)
 
     useEffect(() => {
         dispatch(getOrderProducts())
@@ -26,17 +28,19 @@ const Cart = () => {
             <TableHead>Product price</TableHead>
             <TableHead>Total amount</TableHead>
             <TableHead>Total order</TableHead>
+            <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {/* {invoices.map((invoice) => (
-            <TableRow key={invoice.invoice}>
-              <TableCell className="font-medium">{invoice.invoice}</TableCell>
-              <TableCell>{invoice.paymentStatus}</TableCell>
-              <TableCell>{invoice.paymentMethod}</TableCell>
-              <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+          {orderProducts.map((order) => (
+            <TableRow key={order._id}>
+              <TableCell className="font-medium">{order.product.productName}</TableCell>
+              <TableCell>{order.product.productName}</TableCell>
+              <TableCell>{order.product.productPrice} * Number(order?totalOrder)</TableCell>
+              <TableCell className="text-right">{order.totalOrder}</TableCell>
+              <TableCell></TableCell>
             </TableRow>
-          ))} */}
+          ))}
         </TableBody>
       </Table>
     </div>
