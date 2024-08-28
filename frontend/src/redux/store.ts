@@ -5,7 +5,7 @@ import OrderSlice from "./slice/order-slice";
 export const store = configureStore({
   reducer: {
     count: CountSlice,
-    order: OrderSlice
+    order: OrderSlice,
   },
 });
 

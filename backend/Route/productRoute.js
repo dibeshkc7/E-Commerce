@@ -12,4 +12,4 @@ router.get("/related-products/:id", relatedProduct);
 router.put("/update-product/:id", upload.single('productImage'),updateProduct);
 router.delete("/delete-product/:id", deleteProduct);
 
-module.exports = router;
+module.exports = router;``

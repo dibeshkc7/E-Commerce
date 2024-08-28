@@ -62,6 +62,8 @@ exports.CreateUser = async (req, res) => {
     "userDetail.middleName": req.body.middleName,
     "userDetail.lastName": req.body.lastName,
     "userDetail.phoneNumber": req.body.phoneNumber,
+    "userDetail.address": req.body.address,
+    "userDetail.gender": req.body.gender,
   });
 
   const saveUser = await createUser.save();
@@ -105,6 +107,8 @@ exports.getAllUser = async (req, res) => {
   return res.send(users);
 };
 
+
+// -----Update User------
 exports.updateUser = async (req, res) => {
   const updateUser = await UserModel.findByIdAndUpdate(
     req.params.id,
@@ -274,7 +278,7 @@ exports.resendConfirmation = async (req, res) => {
     return res.status(400).json({ error: "User already veriified" });
   }
 
-  //generate email for the email verification
+  //generate token for the email verification
   const token = await jwt.sign(
     {
       email: req.body.email,

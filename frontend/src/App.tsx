@@ -21,6 +21,7 @@ import GetOrder from "./pages/Dashboard/orders/get-order";
 import GetCustomer from "./pages/Dashboard/customers/get-customer";
 import ProductPage from "./pages/Products/Product";
 import UpdateProductPage from "./pages/Dashboard/product/update-product/update-product";
+import AdminLayout from "./layout/user-layout/admin-layout";
 
 const App = () => {
   return (
@@ -49,6 +50,7 @@ const App = () => {
         {/* Authentication Layout         */}
 
         <Route element={<AuthLayout />}>
+        <Route element={<AdminLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
 
           {/* product */}
@@ -67,6 +69,13 @@ const App = () => {
 
           {/* customers */}
           <Route path="/dashboard/customers" element={<GetCustomer />} />
+        </Route>
+
+        {/* User layout */}
+        <Route element={<UserLayout />}>
+          <Route path="/user-dashboard" element={<UserDashboard />} />
+          <Route path="/carts" element={<Cart />} />
+          
         </Route>
       </Routes>
     </Router>
