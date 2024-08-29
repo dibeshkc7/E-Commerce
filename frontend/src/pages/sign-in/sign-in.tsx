@@ -39,6 +39,7 @@ const SigninPage = () => {
 
       Cookie.set("accessToken", data.accessToken);
       Cookie.set("userId", data.user._id);
+      Cookie.set("role", data.user.role);
 
       navigate("/dashboard");
       toast.success(data.message || "Login successfully");

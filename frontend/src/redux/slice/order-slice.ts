@@ -19,7 +19,6 @@ export const getOrderProducts = createAsyncThunk("product-orders", async () => {
     const { data } = await axios.get(
       `${AppConfig.API_URL}/get-order/${userId}`
     );
-
     return {
       success: true,
       message: "Successful",
@@ -59,6 +58,35 @@ export const addProductToCart = createAsyncThunk(
       return {
         success: false,
         message: "Failed to get orders",
+      };
+    }
+  }
+);
+
+export const updateProductToCart = createAsyncThunk(
+  "update-product",
+  async ({
+    orderId,
+    totalOrder,
+  }: {
+    orderId: string;
+    totalOrder: number;
+  }) => {
+    // const { userId } = useAuth();
+    try {
+      const { data } = await axios.put(`${AppConfig.API_URL}/update-order/${orderId}`, {
+        totalOrder: totalOrder,
+      });
+
+      return {
+        success: true,
+        message: "Update to cart",
+        data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Failed to update cart",
       };
     }
   }

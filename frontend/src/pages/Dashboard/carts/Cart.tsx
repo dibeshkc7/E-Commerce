@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -8,8 +8,13 @@ import {
   TableRow,
 } from "../../../@/components/ui/table";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
-import { getOrderProducts } from "../../../redux/slice/order-slice";
+import {
+  getOrderProducts,
+  updateProductToCart,
+} from "../../../redux/slice/order-slice";
 import { store } from "../../../redux/store";
+import { IOrder } from "../../../interface/order";
+import { toast } from "sonner";
 
 const Cart = () => {
   const dispatch = useAppDispatch();
@@ -18,12 +23,25 @@ const Cart = () => {
   useEffect(() => {
     dispatch(getOrderProducts());
   }, [dispatch]);
+
+  const increaseOrder = useCallback(
+    (order: IOrder) => {
+      const finalOrder = order.totalOrder++;
+      const update = {
+        orderId: order._id,
+        totalOrder: finalOrder,
+      };
+      dispatch(updateProductToCart(update));
+      toast.success("Updated to cart");
+    },
+    [dispatch]
+  );
+
   return (
     <div>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">SN</TableHead>
             <TableHead>Product name</TableHead>
             <TableHead>Product price</TableHead>
             <TableHead>Total amount</TableHead>
