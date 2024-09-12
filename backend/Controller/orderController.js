@@ -1,4 +1,5 @@
 const OrderModel = require("../Model/orderModel");
+const mongoose = require("mongoose");
 
 exports.createOrder = async (req, res) => {
   const { userId, productId, totalOrder } = req.body;

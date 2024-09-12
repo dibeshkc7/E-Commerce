@@ -17,7 +17,7 @@ exports.addCategory = async (req, res) => {
   } else {
     return res.status(400).json({ error: "Category already exists" });
   }
-  return res.status(200)
+  return res.status(200);
 };
 
 exports.viewCategory = async (req, res) => {

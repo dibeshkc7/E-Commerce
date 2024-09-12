@@ -1,15 +1,20 @@
+import { useCallback } from "react";
+import { toast } from "sonner";
 import useSWR from "swr";
+
 import { getProductById } from "../../API/productApi";
 
-import RelatedProducts from "./related-products";
 import { displayImage } from "../../utils/helper";
+import RelatedProducts from "./related-products";
 import Button from "../reusable/button/button";
+
+//
 import { useAppDispatch } from "../../hooks/redux";
-import { useCallback } from "react";
 import { addProductToCart } from "../../redux/slice/order-slice";
-import { toast } from "sonner";
 import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import RecommendProducts from "./recomment-product";
+import StarRating from "../ratings/rating";
 
 interface Props {
   id: string;
@@ -20,14 +25,13 @@ const ProductDetail = ({ id }: Props) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { accessToken } = useAuth();
+  const { accessToken, userId } = useAuth();
 
   const handleAddToCart = useCallback(async () => {
     const product = {
       productId: id,
       totalOrder: 1,
     };
-
     if (accessToken) {
       dispatch(addProductToCart(product));
       toast.message("Added to cart");
@@ -39,13 +43,13 @@ const ProductDetail = ({ id }: Props) => {
 
   return (
     <div>
-      <div className="border p-5 rounded-lg space-y-5 max-w-screen-xl mx-auto">
-        <div>
+      {product && (
+        <div className="border p-5 rounded-xl shadow-xl space-y-5 max-w-screen-sm mx-auto">
           <div className="flex items-center justify-center">
             <img
-              src={displayImage(product?.productImage)}
+              src={product?.productImage || displayImage(product?.productImage)}
               alt={product?.productName}
-              className="h-[500px]"
+              className="h-[500px] w-full object-contain"
             />
           </div>
           <div className="border-t mt-2">
@@ -56,24 +60,34 @@ const ProductDetail = ({ id }: Props) => {
             <div>
               <span className="font-bold">Rating:</span>{" "}
               {product?.productRating}
+              <StarRating
+                count={product?.productRating || 0}
+                edit
+                productId={product._id}
+              />
             </div>
             <p>
-              <span className="font-bold">Price: </span> ${" "}
-              {product?.productPrice}
+              <span className="font-bold">Price:</span>${product?.productPrice}
             </p>
-            <p className="line-clamp-2">{product?.productDescription}</p>
+            <p className="">{product?.productDescription}</p>
           </div>
-          <div></div>
+          <Button
+            buttonType="button"
+            buttonColor={{ primary: true }}
+            onClick={handleAddToCart}
+          >
+            Add to cart
+          </Button>
         </div>
-        <Button
-          buttonType="button"
-          buttonColor={{ primary: true }}
-          onClick={handleAddToCart}
-        >
-          Add to cart
-        </Button>
-      </div>
-      <RelatedProducts id={id} />
+      )}
+
+      {accessToken !== undefined && userId && userId !== undefined ? (
+        // COLLABORATIVE FILTERING
+        <RecommendProducts userId={userId} />
+      ) : (
+        // Content BASED FILTERING
+        <RelatedProducts id={id} />
+      )}
     </div>
   );
 };

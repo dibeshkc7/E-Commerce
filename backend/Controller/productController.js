@@ -10,6 +10,7 @@ exports.addProduct = async (req, res) => {
     productCategory,
     productImage,
     totalProduct,
+    tags,
   } = req.body;
 
   const addProduct = new ProductModel({
@@ -20,6 +21,7 @@ exports.addProduct = async (req, res) => {
     productCategory: productCategory,
     productImage: req.file.path,
     totalProduct: totalProduct,
+    tags,
   });
 
   addProduct.save();
@@ -52,7 +54,7 @@ exports.getAllProduct = async (req, res) => {
 exports.getProductById = async (req, res) => {
   const { id } = req.params;
 
-  const products = await ProductModel.findById(id)
+  const products = await ProductModel.findById(id);
 
   if (!products) {
     return res.json({ error: "Error" }).status(400);
@@ -70,6 +72,7 @@ exports.updateProduct = async (req, res) => {
     productRating,
     productCategory,
     totalProduct,
+    tags,
   } = req.body;
 
   const product = {
@@ -80,6 +83,7 @@ exports.updateProduct = async (req, res) => {
     productCategory: productCategory,
     productImage: req.file.path,
     totalProduct: totalProduct,
+    tags,
   };
 
   if (!id) {
@@ -97,16 +101,26 @@ exports.updateProduct = async (req, res) => {
 
 exports.relatedProduct = async (req, res) => {
   const { id } = req.params;
-  const products = await ProductModel.find({
-    _id: { $ne: id },
-  });
+  try {
+    const product = await ProductModel.findById(id);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+    const relatedProducts = await ProductModel.find({
+      _id: { $ne: id }, // Exclude the current product
+      productCategory: product.productCategory, // Match the same category
+    });
 
-  if (!products) {
-    return res.json({ error: "Failed to get product" }).status(400);
+    if (!relatedProducts || relatedProducts.length === 0) {
+      return res.status(404).json({ error: "No related products found" });
+    }
+
+    res.status(200).json(relatedProducts);
+  } catch (error) {
+    console.error("Error fetching related products:", error);
+    res.status(500).json({ error: "Failed to fetch related products" });
   }
-  res.send(products);
 };
-
 exports.deleteProduct = async (req, res) => {
   let product = await ProductModel.findByIdAndDelete(req.params.id);
   if (!product) {

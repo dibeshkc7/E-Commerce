@@ -25,6 +25,8 @@ import UserDashboard from "./pages/Dashboard/user-dashboard/user-dashboard";
 import Cart from "./pages/Dashboard/carts/Cart";
 import AddCategoryForm from "./pages/Dashboard/category/add-category";
 import UpdateCategoryPage from "./pages/Dashboard/category/update-category/update-category";
+import Shipping from "./pages/Dashboard/shipping/shipping";
+import OrderRequests from "./pages/Dashboard/shipping/order-requests";
 
 const App = () => {
   return (
@@ -86,6 +88,9 @@ const App = () => {
           <Route element={<UserLayout />}>
             <Route path="/user-dashboard" element={<UserDashboard />} />
             <Route path="/carts" element={<Cart />} />
+
+            <Route path="/shipping" element={<OrderRequests />} />
+            <Route path="/shipping/:id" element={<Shipping />} />
           </Route>
         </Route>
       </Routes>

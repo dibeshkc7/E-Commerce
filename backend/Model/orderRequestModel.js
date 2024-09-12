@@ -3,11 +3,7 @@ const { ObjectId } = mongoose.Schema;
 
 const orderRequestSchema = new mongoose.Schema(
   {
-    user: {
-      type: ObjectId,
-      ref: "User",
-    },
-    product: [
+    products: [
       {
         type: ObjectId,
         ref: "Product",
@@ -22,9 +18,10 @@ const orderRequestSchema = new mongoose.Schema(
     },
     orderStatus: {
       type: String,
-      enum: ["request" | "payment" | "delivered" | "cancelled"],
+      default: "shipping",
+      enum: ["shipping", "payment", "delivered", "cancelled"],
     },
-    shippingAdress: {
+    shippingAddress: {
       user: {
         type: ObjectId,
         ref: "User",
@@ -35,11 +32,11 @@ const orderRequestSchema = new mongoose.Schema(
     },
     stripePaymentIntentId: {
       type: String,
-      required: true,
+      // required: true,
     },
     stripeChargeId: {
       type: String,
-      default: null,
+      default: null, // This will be populated when the charge is successful
     },
   },
   { timestamps: true }

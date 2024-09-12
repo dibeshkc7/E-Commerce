@@ -1,18 +1,19 @@
-import React from "react";
 import useSWR from "swr";
-import { getRelatedProduct } from "../../API/productApi";
-import { Link } from "react-router-dom";
+import { getRecommendedProduct } from "../../API/productApi";
 import { displayImage } from "../../utils/helper";
+import { Link } from "react-router-dom";
+import StarRating from "../ratings/rating";
 
 interface Props {
-  id: string;
+  userId: string;
 }
 
-const RelatedProducts = ({ id }: Props) => {
+const RecommendProducts = ({ userId }: Props) => {
   const { data: products } = useSWR(
-    `related-products/${id}`,
-    getRelatedProduct
+    `recommend-product/${userId}`,
+    getRecommendedProduct
   );
+
   return (
     <div className="grid grid-cols-4 gap-10 p-10">
       {products?.map((product) => (
@@ -21,16 +22,17 @@ const RelatedProducts = ({ id }: Props) => {
             <img
               src={product?.productImage || displayImage(product.productImage)}
               alt={product.productName}
-              className="h-[400px] w-full object-cover"
+              className="h-32 w-32"
             />
           </div>
           <div className="border-t mt-2">
             <p className="font-bold capitalize">
-              {product?.productCategory.categoryName}
+              {product?.productCategory?.categoryName}
             </p>
             <p className="line-clamp-1">{product.productName}</p>
             <div>
               <span className="font-bold">Rating:</span> {product.productRating}
+              <StarRating count={product?.productRating || 0} />
             </div>
             <p>
               <span className="font-bold">Price:</span> {product.productPrice}
@@ -51,4 +53,4 @@ const RelatedProducts = ({ id }: Props) => {
   );
 };
 
-export default RelatedProducts;
+export default RecommendProducts;
